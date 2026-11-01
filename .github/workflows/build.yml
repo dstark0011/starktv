@@ -26,9 +26,13 @@ jobs:
       - name: Find the project
         id: proj
         run: |
+          # the project may have been uploaded as a zip – unpack it
+          for z in $(find . -maxdepth 2 -name '*.zip' -not -path './.git/*'); do
+            unzip -o -q "$z" -d .
+          done
           f=$(find . -name settings.gradle.kts -not -path './.git/*' | head -1)
           if [ -z "$f" ]; then
-            echo "::error::settings.gradle.kts isn't in the repo – upload all the files from the zip"
+            echo "::error::settings.gradle.kts isn't in the repo or the zip"
             find . -not -path './.git/*' | head -60
             exit 1
           fi
