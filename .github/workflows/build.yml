@@ -92,27 +92,37 @@ jobs:
           title=$(grep -m1 '^## ' "$cl" | sed -E 's/^## *[0-9.]+ *//; s/^(—|–|-) *//')
           echo "name=StarkTV $v.${{ github.run_number }} — $title" >> "$GITHUB_OUTPUT"
           awk 'f && /^## /{exit} /^## /{f=1; next} f' "$cl" > notes.md
-          printf '\nInstall on the Fire Stick / phone: https://github.com/%s/releases/latest/download/StarkTV.apk\n' "${{ github.repository }}" >> notes.md
+          printf '\nFire Stick: https://github.com/%s/releases/latest/download/StarkTV.apk\n' "${{ github.repository }}" >> notes.md
+          printf 'Phone: https://github.com/%s/releases/latest/download/StarkTV-Phone.apk\n' "${{ github.repository }}" >> notes.md
           printf 'Windows: https://github.com/%s/releases/latest/download/StarkTV-Windows.zip (unzip, then run the StarkTV exe inside)\n' "${{ github.repository }}" >> notes.md
 
       - name: Build the APK
         working-directory: ${{ steps.proj.outputs.dir }}
         run: gradle :app:assembleRelease --stacktrace
 
-      - name: Name it
-        run: cp "${{ steps.proj.outputs.dir }}/app/build/outputs/apk/release/app-release.apk" StarkTV.apk
+      - name: Name them
+        run: |
+          o="${{ steps.proj.outputs.dir }}/app/build/outputs/apk"
+          if [ -f "$o/tv/release/app-tv-release.apk" ]; then
+            cp "$o/tv/release/app-tv-release.apk" StarkTV.apk            # Fire Stick (installs its own updates)
+            cp "$o/phone/release/app-phone-release.apk" StarkTV-Phone.apk  # phones (no Play Protect warning)
+          else
+            cp "$o/release/app-release.apk" StarkTV.apk
+          fi
 
       - uses: actions/upload-artifact@v4
         with:
           name: StarkTV-apk
-          path: StarkTV.apk
+          path: StarkTV*.apk
 
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: build-${{ github.run_number }}
           name: ${{ steps.notes.outputs.name }}
           body_path: notes.md
-          files: StarkTV.apk
+          files: |
+            StarkTV.apk
+            StarkTV-Phone.apk
           make_latest: true
 
       - name: Hand the source to the Windows build

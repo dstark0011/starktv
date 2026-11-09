@@ -1,0 +1,12 @@
+HANDOVER.md
+.gradle/
+build/
+local.properties
+*.iml
+.idea/
+node_modules/
+windows/dist/
+windows/app/vendor/
+tests/out/
+tests/perf/live.json
+tests/perf/xmltv.xml

@@ -1,0 +1,9 @@
+{
+  "name": "starktv-tests",
+  "private": true,
+  "description": "Browser tests: the app page with a fake provider and a fake Android bridge (window.AndroidBridge) in headless Chromium",
+  "scripts": {
+    "test": "for f in *.test.js; do echo \"== $f\"; node $f || exit 1; done"
+  },
+  "devDependencies": { "playwright": "^1.47.0" }
+}

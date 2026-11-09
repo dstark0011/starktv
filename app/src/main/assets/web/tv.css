@@ -1,0 +1,142 @@
+/* StarkTV – TV layout (10-foot, remote control). Loaded after style.css on the Android TV app only. */
+html.tv body{font-size:16px}
+html.tv .resizer,html.tv #btnExt,html.tv #vlcBar,html.tv #soundWarn,html.tv .pc-only,
+html.tv label:has(#setPlayer),html.tv label:has(#setEngine),html.tv label:has(#setBuffer){display:none!important}
+html.tv ::-webkit-scrollbar{width:0;height:0}
+html.tv *:focus{outline:none}
+html.tv:not(.phone) button:focus,html.tv:not(.phone) input:focus,html.tv:not(.phone) select:focus,html.tv:not(.phone) .saved-row:focus{box-shadow:0 0 0 3px var(--accent)!important}
+html.tv:not(.phone) .list li:focus,html.tv:not(.phone) .ev-row:focus,html.tv:not(.phone) .eps li:focus{background:var(--accent)!important;color:var(--accent-ink)!important}
+html.tv:not(.phone) .list li:focus *,html.tv:not(.phone) .ev-row:focus *,html.tv:not(.phone) .eps li:focus *{color:var(--accent-ink)!important}
+html.tv:not(.phone) .rail-btn:focus{background:var(--accent);color:var(--accent-ink)}
+html.tv:not(.phone) .g-ch:focus{background:var(--accent)!important;color:var(--accent-ink)}
+html.tv:not(.phone) .g-ch:focus *{color:var(--accent-ink)!important}
+html.tv:not(.phone) .g-prog:focus{background:var(--accent)!important;border-color:var(--accent)!important;color:var(--accent-ink);opacity:1}
+html.tv:not(.phone) .g-prog:focus *{color:var(--accent-ink)!important}
+html.tv .g-scroll{scroll-padding-left:calc(var(--gch,260px) + 10px);scroll-padding-top:44px;scroll-behavior:auto}
+html.tv .list{scroll-padding:40px 0}
+html.tv .main{grid-template-columns:200px 260px 380px minmax(0,1fr)}
+html.tv .main.guide-mode{grid-template-columns:200px 240px minmax(0,1fr)}
+html.tv .main.search-mode{grid-template-columns:200px 600px minmax(0,1fr)}
+html.tv .rail-btn{font-size:17px;padding:11px 12px}
+html.tv .list li{min-height:44px;font-size:16px}
+html.tv .player-wrap{max-height:52vh}
+html.tv .main.guide-mode .player-wrap{height:34vh;max-height:34vh}
+html.tv .login-card{transform:scale(1.15);transform-origin:top center}
+html.tv #video,html.tv #btnLive{display:none!important}
+/* the video plays underneath the page: keep the page see-through so it shows in the player area */
+html.tv,html.tv body{background:transparent!important}
+html.tv .player-wrap{background:transparent}
+
+html.tv .main.nf-mode{grid-template-columns:200px minmax(0,1fr)}
+html.tv:not(.phone) .nf-card:focus img,html.tv:not(.phone) .nf-card:focus .nf-noimg{box-shadow:0 0 0 4px var(--accent),0 10px 24px rgba(0,0,0,.6)}
+html.tv:not(.phone) .nf-btn:focus{box-shadow:0 0 0 4px var(--accent)}
+html.tv .nf-hero{height:360px}
+
+
+/* ===================== Phones ===================== */
+html.phone body{font-size:15px}
+html.phone .rail-btn{font-size:14px;padding:8px 10px}
+html.phone .rail-brand{font-size:17px;padding-bottom:12px}
+html.phone .list li{min-height:40px;font-size:15px}
+/* landscape phone (the normal layout once signed in): slim text menu, wide categories, the guide gets the rest */
+html.phone .main{grid-template-columns:84px 170px 220px minmax(0,1fr)}
+html.phone .main.guide-mode{grid-template-columns:84px 170px minmax(0,1fr)}
+html.phone .main.search-mode{grid-template-columns:84px minmax(0,1fr) minmax(0,.8fr)}
+html.phone .main.nf-mode{grid-template-columns:84px minmax(0,1fr)}
+html.phone .rail{padding:6px 4px;gap:0}
+html.phone .rail .resizer,html.phone .rail-brand,html.phone .acct{display:none}
+html.phone .rail-btn,html.phone .rail-btn.small{font-size:13px;line-height:1.2;padding:9px 8px;border-radius:8px;color:var(--dim)}
+html.phone .rail-btn.on{color:var(--text,#fff);background:var(--panel)}
+html.phone .rail-btn.on::before{left:-4px}
+html.phone .rail-foot{gap:0}
+html.phone #catSearch{font-size:14px;padding:7px 10px;margin:6px}
+html.phone #catList li{font-size:14px;min-height:34px;padding:6px 10px}
+html.phone #catList li .n{white-space:normal;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+html.phone .list li{min-height:38px;font-size:14px}
+html.phone .g-bar{padding:3px 8px;min-height:0;align-items:center}
+html.phone .g-bar .g-info{font-size:12px;line-height:1.3;max-height:2.6em;overflow:hidden;flex:1}
+html.phone #gNow{padding:4px 12px}
+html.phone .main.guide-mode .player-wrap{height:36vh;max-height:36vh}
+/* phone: a compact TV guide – shorter rows, smaller text, wider channel names */
+html.phone .g-row{height:40px}
+html.phone .g-empty{line-height:40px;font-size:11px}
+html.phone .g-ch{gap:6px;padding:0 8px}
+html.phone .g-ch img,html.phone .g-noimg{width:24px;height:24px}
+html.phone .g-num{display:none}
+html.phone .g-name{font-size:12px;line-height:1.2}
+html.phone .g-prog{top:3px;bottom:3px;padding:2px 6px;border-radius:4px}
+html.phone .g-prog b{font-size:12px}
+html.phone .g-prog span{font-size:10px}
+html.phone .g-head,html.phone .g-corner,html.phone .g-tick{height:24px;line-height:24px}
+html.phone .g-corner,html.phone .g-tick{font-size:11px}
+html.phone .g-info .dim{display:none}
+html.phone .g-bar{min-height:0;padding:2px 8px}
+html.phone #gNow{padding:2px 12px;font-size:13px}
+html.phone .pip-btn{padding:4px 8px;font-size:11px}
+html.phone .nf-hero{height:260px}
+html.phone .nf-hero h1{font-size:28px}
+
+/* portrait phone */
+@media (max-width: 760px) {
+  html.phone .main,html.phone .main.guide-mode,html.phone .main.search-mode,html.phone .main.nf-mode{display:flex;flex-direction:column;height:100vh;padding-bottom:58px;box-sizing:border-box}
+  /* left menu → tab bar along the bottom */
+  html.phone .rail{position:fixed;left:0;right:0;bottom:0;height:58px;flex-direction:row;align-items:stretch;padding:0;gap:0;z-index:450;background:#0b141c;border-top:1px solid var(--line)}
+  html.phone .rail-brand,html.phone .acct,html.phone #btnSwitch,html.phone .rail-btn[data-sec="recent"]{display:none}
+  html.phone .rail-btn .lbl{display:block;font-size:11px}
+  html.phone .rail-foot{margin:0;flex-direction:row;display:flex}
+  html.phone .rail-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;text-align:center;font-size:11px;padding:4px 2px;border-radius:0;color:var(--dim);background:none!important}
+  html.phone .rail-btn.on{color:var(--accent)}
+  /* categories → a strip you swipe sideways */
+  html.phone .cats{flex:none;border:0;background:var(--panel)}
+  html.phone #catSearch{display:none}
+  html.phone #catList{display:flex;flex-direction:row;overflow-x:auto;overflow-y:hidden;padding:8px;gap:6px;flex:none;scrollbar-width:none}
+  html.phone #catList::-webkit-scrollbar{display:none}
+  html.phone #catList li{flex:none;min-height:0;padding:7px 14px;border-radius:18px;background:var(--panel2);white-space:nowrap;box-shadow:none}
+  html.phone #catList li.on{background:var(--accent);color:var(--accent-ink)}
+  html.phone #catList li .c{display:none}
+  html.phone .items{flex:1;min-height:0;border:0}
+  html.phone .stage{flex:1;min-height:0}
+  /* TV guide: picture across the top, guide underneath */
+  html.phone .main.guide-mode .stage{display:flex}
+  html.phone .main.guide-mode .player-wrap{height:auto!important;max-height:none!important;aspect-ratio:16/9;width:100%;flex:none}
+  html.phone .main.guide-mode .guide{flex:1;min-height:0}
+  html.phone .g-bar{padding:4px 10px}
+  html.phone .g-info{font-size:12px}
+  /* search / favourites / recent: list full screen; picking something plays full screen */
+  html.phone .main:not(.guide-mode):not(.film-play) .stage{display:none}
+  html.phone .main.search-mode .items{display:flex}
+  html.phone .main.search-mode #itemSearch{margin:10px}
+  html.phone .main.search-mode .scope{padding:0 10px 8px;flex-wrap:nowrap}
+  html.phone .scope>span{display:none}
+  html.phone .scope button[data-scope]{flex:1;justify-content:center;padding:9px 6px;font-size:14px}
+  html.phone .scope .voice-btn{flex:none;margin-left:8px;padding:9px 11px}
+  html.phone .scope-q{padding:16px 14px 8px;font-size:18px}
+  html.phone .scope-pick{padding:5px 10px}
+  /* keyboard up: hide the tab bar so the results get the room */
+  html.phone.kb .rail{display:none}
+  html.phone.kb .main{padding-bottom:0!important}
+  /* Films / Series */
+  html.phone .nf{flex:1;height:auto!important;min-height:0}
+  html.phone .nf-top{padding:12px 14px 6px;gap:10px}
+  html.phone .nf-top h2{font-size:20px}
+  html.phone .nf-search{width:55%}
+  html.phone .nf-hero{height:340px}
+  html.phone .nf-hero-in{left:14px;right:14px;bottom:18px;max-width:none}
+  html.phone .nf-hero h1{font-size:28px}
+  html.phone .nf-hero p{font-size:14px;max-height:4.2em}
+  html.phone .nf-row h3{margin:0 14px 6px;font-size:16px;flex-wrap:wrap}
+  html.phone .nf-row h3 small{display:none}
+  html.phone .nf-scroll{padding:4px 14px 10px;gap:8px}
+  html.phone .nf-card,html.phone .nf-card img,html.phone .nf-card .nf-noimg{width:112px}
+  html.phone .nf-card img,html.phone .nf-card .nf-noimg{height:168px}
+  html.phone .nf-card .nf-prog{top:156px}
+  html.phone .nf-more{height:168px}
+  html.phone .nf-grid{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));padding:8px 14px;gap:14px 8px}
+  html.phone .nf-grid .nf-card,html.phone .nf-grid .nf-card img,html.phone .nf-grid .nf-noimg{width:100%}
+  html.phone .nf-dlg{width:100vw;max-height:100vh;border-radius:0}
+  html.phone .nf-dlg-hero{height:220px;border-radius:0}
+  html.phone .nf-dlg h2{font-size:24px}
+  html.phone dialog{width:92vw}
+  html.phone .login-card{transform:none}
+  html.phone .film-back{top:calc(env(safe-area-inset-top) + 10px)}
+}

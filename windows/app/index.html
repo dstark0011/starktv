@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' data: blob: http: https:; media-src * blob: data:; img-src * data: blob:; connect-src *;">
+<title>StarkTV v3.4</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Playlist screen -->
+<section id="splash" class="splash"><div class="splash-brand">StarkTV</div><div class="splash-dots"><i></i><i></i><i></i></div></section>
+
+<section id="login" class="login" hidden>
+  <div class="login-card">
+    <h1 class="brand">StarkTV</h1>
+    <p class="sub">Add a playlist from your provider. Details stay on this PC.</p>
+
+    <div id="saved" class="saved"></div>
+    <label id="autoWrap" class="check auto" hidden><input type="checkbox" id="autoConn"> Open the last playlist automatically on start</label>
+
+    <div class="seg" role="tablist">
+      <button class="seg-btn on" data-mode="xtream">Xtream Codes login</button>
+      <button class="seg-btn" data-mode="m3u">M3U link</button>
+    </div>
+
+    <form id="addForm" autocomplete="off">
+      <label>Name<input name="name" placeholder="e.g. Home TV" required></label>
+      <div class="xt">
+        <label>Server URL<input name="server" placeholder="http://line.example.com:8080"></label>
+        <div class="row2">
+          <label>Username<input name="user"></label>
+          <label>Password<input name="pass" type="password"></label>
+        </div>
+      </div>
+      <div class="m3" hidden>
+        <label>Playlist URL<input name="m3u" placeholder="http://…/get.php?…&type=m3u_plus"></label>
+      </div>
+      <p id="loginErr" class="err" hidden></p>
+      <div class="form-actions">
+        <button class="primary" type="submit" id="btnAdd">Add and connect</button>
+        <button class="ghost" type="button" id="btnCancelEdit" hidden>Cancel edit</button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<!-- Main app -->
+<section id="main" class="main" hidden>
+  <nav class="rail">
+    <div class="resizer" data-col="rail" title="Drag to resize · double-click to reset"></div>
+    <div class="rail-brand">StarkTV <small class="ver">v3.4</small></div>
+    <button class="rail-btn rail-search" data-sec="search" title="Search (Ctrl+F)">Search</button>
+    <button class="rail-btn on" data-sec="guide">Live TV</button>
+    <button class="rail-btn" data-sec="movie">Movies</button>
+    <button class="rail-btn" data-sec="series">Series</button>
+    <button class="rail-btn" data-sec="fav">Favourites</button>
+    <button class="rail-btn" data-sec="recent">Recently watched</button>
+    <div class="rail-foot">
+      <div id="acct" class="acct"></div>
+      <button class="rail-btn small" id="btnSettings">Settings</button>
+      <button class="rail-btn small" id="btnSwitch">Switch playlist</button>
+    </div>
+  </nav>
+
+  <aside class="cats">
+    <div class="resizer" data-col="cats" title="Drag to resize · double-click to reset"></div>
+    <input id="catSearch" class="search" placeholder="Filter categories">
+    <ul id="catList" class="list"></ul>
+  </aside>
+
+  <aside class="items">
+    <div class="resizer" data-col="items" title="Drag to resize · double-click to reset"></div>
+    <input id="itemSearch" class="search" placeholder="Search channels &amp; programmes">
+    <div id="searchScope" class="scope"><span>Search in</span><button class="on" data-scope="live">Live TV</button><button data-scope="movie">Films</button><button data-scope="series">Series</button><button id="btnVoice" class="voice-btn" title="Speak" hidden></button></div>
+    <div id="itemCount" class="count"></div>
+    <ul id="itemList" class="list items-list"></ul>
+  </aside>
+
+  <section id="nf" class="nf"></section>
+
+  <main class="stage">
+    <button id="filmBack" class="film-back">← Back to films</button>
+    <div id="playerWrap" class="player-wrap">
+      <video id="video" controls playsinline></video>
+      <div id="playerMsg" class="player-msg">Pick a channel to start watching</div>
+    </div>
+    <div id="vlcBar" class="vlc-bar" hidden>
+      <span class="vlc-badge">VLC</span><span id="vlcState">Connecting…</span>
+      <button class="ghost" id="vlcPause">❚❚ Pause</button>
+      <button class="ghost" id="vlcDown" title="Volume down">−</button><span id="vlcVol">100%</span><button class="ghost" id="vlcUp" title="Volume up">+</button>
+      <button class="ghost" id="vlcMute">Mute</button>
+      <button class="ghost" id="vlcBuiltin" title="Play this channel in the built-in player again">Use built-in player</button>
+    </div>
+    <div id="soundWarn" class="sound-warn" hidden></div>
+    <section id="guide" class="guide">
+      <div class="g-bar"><div id="gInfo" class="g-info"></div><button id="gNow" class="ghost">Now</button></div>
+      <div id="gScroll" class="g-scroll"><div id="gInner" class="g-inner"></div></div>
+    </section>
+    <div class="np">
+      <div class="np-head">
+        <h2 id="npTitle">Nothing playing</h2>
+        <div class="np-actions">
+          <button id="btnFav" class="ghost" disabled>Add to favourites</button>
+          <button id="btnExt" class="ghost" disabled>Open in VLC</button>
+          <button id="btnLive" class="ghost" hidden title="Skip to the newest part of the stream">Jump to live</button>
+          <button id="btnFull" class="ghost" disabled>Full screen</button>
+        </div>
+      </div>
+      <div id="detail" class="detail"></div>
+    </div>
+  </main>
+</section>
+
+<dialog id="settings">
+  <form method="dialog" class="settings">
+    <h3>Settings</h3>
+    <label>Live stream format
+      <select id="setFormat">
+        <option value="ts">MPEG-TS (most compatible)</option>
+        <option value="m3u8">HLS (.m3u8)</option>
+      </select>
+    </label>
+    <label>Player
+      <select id="setEngine">
+        <option value="auto">Automatic – built-in, VLC for channels it can’t play or hear (recommended)</option>
+        <option value="vlc">Always VLC (inside StarkTV)</option>
+        <option value="builtin">Built-in only</option>
+      </select>
+    </label>
+    <label class="no-tv">Channel start-up (built-in player)
+      <select id="setBuffer">
+        <option value="smooth">Smooth – starts after ~2 s (recommended)</option>
+        <option value="balanced">Quick – starts after ~1 s</option>
+        <option value="low">Instant – may stall</option>
+      </select>
+    </label>
+    <label>External player path (optional)
+      <input id="setPlayer" placeholder="C:\Program Files\VideoLAN\VLC\vlc.exe">
+    </label>
+    <label class="tv-only pc-too">Live delay – stops buffering
+      <select id="setDelay">
+        <option value="0">Off – as close to live as possible</option>
+        <option value="10">10 seconds</option>
+        <option value="15">15 seconds (recommended)</option>
+        <option value="20">20 seconds</option>
+        <option value="30">30 seconds</option>
+      </select>
+    </label>
+    <label class="tv-only">Pause &amp; rewind up to
+      <select id="setRewind">
+        <option value="3">3 minutes</option>
+        <option value="5">5 minutes</option>
+        <option value="10">10 minutes</option>
+        <option value="20">20 minutes</option>
+        <option value="30">30 minutes (about 1.4 GB on the Stick for HD)</option>
+      </select>
+    </label>
+    <label class="tv-only">Info banner
+      <select id="setOsd">
+        <option value="5">Hide after 5 seconds</option>
+        <option value="10">Hide after 10 seconds</option>
+        <option value="0">Stay until Back</option>
+      </select>
+    </label>
+    <label>Subtitles
+      <select id="setSubs">
+        <option value="off">Off unless I pick them (CC button)</option>
+        <option value="on">Show when the programme has them</option>
+      </select>
+    </label>
+    <h3 class="set-h">Internet connection</h3>
+    <div class="nettest"><button type="button" id="btnSpeed" class="ghost">Test my internet</button><div id="speedOut" class="speed-out">Checks how fast your internet is and what it can play.</div></div>
+    <label class="tv-only">Buffer for slow internet
+      <select id="setNet">
+        <option value="auto">Automatic – bigger buffer if it keeps buffering (recommended)</option>
+        <option value="normal">Normal – use the live delay above</option>
+        <option value="slow">Slow internet – always keep a 45-second buffer</option>
+      </select>
+    </label>
+    <label class="tv-only">When a channel is too much for your internet
+      <select id="setNetSwitch">
+        <option value="ask">Switch to a lower-quality version (5-second countdown)</option>
+        <option value="never">Never switch</option>
+      </select>
+    </label>
+    <label class="tv-only no-phone">Clock overlay on live TV
+      <select id="setClock">
+        <option value="off">Off</option>
+        <option value="on">On – real time, time on screen, seconds behind live (top left)</option>
+      </select>
+    </label>
+    <label class="tv-only">Connection light while watching
+      <select id="setNetDot">
+        <option value="problem">Only when there's a problem</option>
+        <option value="always">Always</option>
+        <option value="off">Off</option>
+      </select>
+    </label>
+    <div class="tv-only logrow"><button type="button" id="btnLog" class="ghost">Playback log</button><span class="speed-out">What the player did recently (reconnects, jumps, errors) – handy if something odd happens.</span></div>
+    <div class="logrow updrow"><button type="button" id="btnUpd" class="ghost">Check for updates</button><span id="updOut" class="speed-out">StarkTV checks by itself twice a day and offers new versions.</span></div>
+    <label class="check"><input type="checkbox" id="setResume"> Start on the last channel I watched</label>
+    <label class="check"><input type="checkbox" id="setAdult"> Hide adult categories</label>
+    <menu><button value="cancel" class="ghost">Cancel</button><button value="ok" class="primary" id="setSave">Save</button></menu>
+  </form>
+</dialog>
+
+<div id="nfModal" class="nf-modal" hidden></div>
+<div id="osd" hidden></div>
+<div id="netDot" class="net-dot" hidden></div>
+<div id="clockOv" class="clock-ov" hidden></div>
+<div id="netSwitch" class="net-switch" hidden></div>
+<div id="newsPop" class="news-pop" hidden></div>
+<div id="updPop" class="news-pop upd-pop" hidden></div>
+<dialog id="logDlg" class="log-dlg"><h3>Playback log <small>newest first</small></h3><pre id="logText"></pre><menu><button class="primary" id="logClose">Close</button></menu></dialog>
+<script src="vendor/hls.min.js"></script>
+<script src="vendor/mpegts.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

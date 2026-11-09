@@ -1,0 +1,41 @@
+const { chromium } = require('playwright');
+const ROOT = require('path').resolve(__dirname, '..'); const OUT = ROOT + '/tests/out/';
+ const fs = require('fs');
+(async () => {
+  const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 1280, height: 720 } });
+  const errs = []; p.on('pageerror', e => errs.push(e.message)); const now = Math.floor(Date.now()/1000);
+  let seasons = { '900': 2, '901': 1 }, s1eps = { '901': 6 };
+  await p.route('http://img.test/**', r => { const f = r.request().url().split('/').pop(); r.fulfill({ status: 200, contentType: 'image/jpeg', body: fs.readFileSync(ROOT + '/tests/fixtures/posters/' + f) }); });
+  await p.route('http://mock.test/**', r => { const u = r.request().url(); const act = (u.match(/action=([a-z_]+)/) || [])[1]; let body = '[]';
+    if (!act) body = JSON.stringify({ user_info: { auth: 1, status: 'Active', exp_date: String(now + 9e6) } });
+    else if (act === 'get_live_categories') body = JSON.stringify([{ category_id: 1, category_name: 'UK' }]);
+    else if (act === 'get_live_streams') body = JSON.stringify([{ stream_id: 1, name: 'BBC One', category_id: 1 }]);
+    else if (act === 'get_series_categories') body = JSON.stringify([{ category_id: 31, category_name: 'Drama' }]);
+    else if (act === 'get_series') body = JSON.stringify([{ series_id: 900, name: 'The Bear', category_id: 31, cover: 'http://img.test/p1.jpg' }, { series_id: 901, name: 'Slow Horses', category_id: 31, cover: 'http://img.test/p2.jpg' }, ...Array.from({ length: 20 }, (_, i) => ({ series_id: 950 + i, name: 'Show ' + i, category_id: 31, cover: `http://img.test/p${(i % 20) + 3}.jpg` }))]);
+    else if (act === 'get_series_info') { const id = u.match(/series_id=(\d+)/)[1]; const n = seasons[id] || 1; const eps = {};
+      for (let s = 1; s <= n; s++) eps[s] = Array.from({ length: s === n && s1eps[id] ? s1eps[id] : 4 }, (_, k) => ({ id: id + s + k, episode_num: k + 1, title: 'Ep ' + (k + 1), container_extension: 'mp4' }));
+      body = JSON.stringify({ info: { plot: 'x' }, episodes: eps }); }
+    r.fulfill({ status: 200, contentType: 'application/json', body }); });
+  await p.route('https://**', r => r.abort());
+  await p.addInitScript(() => { const prof = { id: 'p1', name: 'Home', type: 'xtream', server: 'http://mock.test', user: 'u', pass: 'p' };
+    localStorage.setItem('profiles', JSON.stringify([prof])); localStorage.setItem('last', JSON.stringify('p1'));
+    if (!localStorage.getItem('seeded')) { localStorage.setItem('seeded', '1');
+      localStorage.setItem('watchS:p1', JSON.stringify({ '900': { id: '900', name: 'The Bear', cat: '31', icon: 'http://img.test/p1.jpg', at: Date.now() - 86400000, pos: 1500, dur: 1600, ep: { season: '2', num: '4' }, epDone: true },
+        '901': { id: '901', name: 'Slow Horses', cat: '31', icon: 'http://img.test/p2.jpg', at: Date.now() - 3600000, pos: 1500, dur: 1600, ep: { season: '1', num: '6' }, epDone: true } })); } });
+  await p.goto('file://' + ROOT + '/windows/app/index.html'); await p.waitForTimeout(1500);
+  const S = () => p.evaluate(() => [store.get(trackKey()), store.get(newsKey())]);
+  await p.evaluate(() => newsCheck()); await p.waitForTimeout(3500);
+  console.log('after seed', JSON.stringify(await S()));
+  seasons['900'] = 3; s1eps['901'] = 8;
+  await p.evaluate(() => { const a = store.get(trackKey()); for (const k in a) a[k].checked = 0; store.set(trackKey(), a); newsBusy = false; newsCheck(); }); await p.waitForTimeout(3500);
+  console.log('news', JSON.stringify((await S())[1]));
+  console.log('badge', await p.evaluate(() => document.querySelector('.rail-badge')?.textContent), 'pop', await p.evaluate(() => [!$('#newsPop').hidden, $('#newsPop').innerText]));
+  await p.screenshot({ path: OUT + 'news-pop.png' });
+  await p.evaluate(() => setSection('series')); await p.waitForTimeout(1500);
+  await p.screenshot({ path: OUT + 'news-series.png' });
+  console.log('rows', await p.evaluate(() => [...document.querySelectorAll('.nf-row h3')].slice(0, 3).map(h => h.textContent.trim().slice(0, 40))), 'hero', await p.evaluate(() => document.querySelector('.nf-badge').textContent));
+  await p.evaluate(() => itemModal({ ...S.items.series.find(x => x.id === '900'), kind: 'series' })); await p.waitForTimeout(800);
+  console.log('modal season', await p.evaluate(() => document.querySelector('.nf-seasons .on')?.textContent));
+  await p.evaluate(async () => { const info = await itemInfo({ id: '900', kind: 'series' }); playEpisode(S.items.series.find(x => x.id === '900'), info.eps['3'][0], '3', 0); }); await p.waitForTimeout(800);
+  console.log('after watching', JSON.stringify((await S())[1]), await p.evaluate(() => document.querySelector('.rail-badge')?.textContent));
+  console.log(errs); await b.close(); })();
