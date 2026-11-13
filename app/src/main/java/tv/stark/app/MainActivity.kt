@@ -560,8 +560,11 @@ class MainActivity : Activity() {
         val liveFull = on && currentUrl != null && (isLive || !tvDevice)
         playerView.useController = on && currentUrl != null && !isLive && tvDevice     // TV films/series: play, pause, seek with the remote
         if (liveFull) {
-            // live: just stretch the video (already underneath the page) and let the page hide everything but the banner
+            // live, and everything on phones: stretch the video underneath and let the page draw the controls on top.
+            // The page's touch layer only gets taps if the WebView is in front, so make sure it is (e.g. after a
+            // TV film, which raises the player, or after returning from picture-in-picture).
             playerView.isFocusable = false
+            web.bringToFront()
             web.requestFocus()
             js("window.__tvFullMode && window.__tvFullMode(true)")
         } else if (on) {
@@ -804,9 +807,11 @@ class MainActivity : Activity() {
         } else {
             if (pipRegistered) { try { unregisterReceiver(pipReceiver) } catch (_: Exception) {}; pipRegistered = false }
             web.visibility = View.VISIBLE
-            playerView.useController = fullscreen && !isLive
-            web.bringToFront()
-            if (fullscreen) playerView.bringToFront()
+            // only TV films/series use the player's own controls (so the player goes on top); for live and for
+            // everything on phones the page draws the controls, so the WebView must stay in front to get the taps
+            val playerOwnsControls = fullscreen && !isLive && tvDevice
+            playerView.useController = playerOwnsControls
+            if (playerOwnsControls) playerView.bringToFront() else web.bringToFront()
             layoutPlayer()
             js("window.__pipEnded && window.__pipEnded()")
         }

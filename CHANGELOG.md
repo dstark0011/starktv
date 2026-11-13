@@ -3,6 +3,13 @@
 Fire TV builds are numbered `version.build` (e.g. 2.9.14 = version 2.9, GitHub build 14).
 The PC app (Windows) shares the same interface code; PC-only changes are marked **PC**.
 
+## 4.22 — Phone: tap the screen for the controls
+- Fixed on phones: in full screen, tapping the screen now brings up the controls – play/pause, the 10-second
+  skip buttons, the seek bar, and the brightness (left) and volume (right) sliders. Tap again (or wait) to hide them.
+- The cause was the video sitting on top of the controls after you'd used the mini player (picture-in-picture) or
+  come straight from a film, so taps landed on the video and nothing happened. The controls now always stay on top.
+- Same fix on the Fire Stick for the rare case where switching from a film to a live channel left the banner dead.
+
 ## 4.21 — Fire Stick updates itself
 - The Fire Stick now installs new versions on its own. When StarkTV finds a new build it downloads it quietly in
   the background and goes straight to Android's "Update?" screen – no more "Update available" box to notice, no

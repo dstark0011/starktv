@@ -1,7 +1,7 @@
 {
   "name": "starktv",
   "productName": "StarkTV",
-  "version": "4.21.0",
+  "version": "4.22.0",
   "description": "IPTV player for Xtream Codes and M3U playlists",
   "main": "main.js",
   "license": "MIT",

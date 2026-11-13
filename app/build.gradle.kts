@@ -14,7 +14,7 @@ android {
         minSdk = 22            // Fire OS 5 and newer
         targetSdk = 34
         versionCode = buildNo
-        versionName = "4.21.$buildNo"
+        versionName = "4.22.$buildNo"
     }
 
     // one fixed key, so every new build installs over the last one on the TV
